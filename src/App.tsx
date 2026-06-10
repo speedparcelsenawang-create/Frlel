@@ -43,6 +43,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
 
 const DAYS = [
   { en: "Monday" },
@@ -129,6 +130,19 @@ function homeDeliveryLabel(value: string): string {
   return value
 }
 
+const HOME_DELIVERY_TOOLTIP_MAP: Record<string, { label: string; description: string }> = {
+  Daily: { label: "Daily", description: "Delivery everyday" },
+  "Alt 1": { label: "Alt 1", description: "Odd dates (1, 3, 5…)" },
+  "Alt 2": { label: "Alt 2", description: "Even dates (2, 4, 6…)" },
+  Weekday: { label: "WD", description: "Sun – Thu" },
+  "Weekday 2": { label: "WE", description: "Mon – Fri" },
+  "Weekday 3": { label: "WA", description: "Sun, Tue & Thu" },
+  Available: { label: "Available", description: "Starting point location" },
+}
+
+function getHomeDeliveryTooltip(value: string) {
+  return HOME_DELIVERY_TOOLTIP_MAP[value] ?? { label: value || "Delivery", description: "Delivery information" }
+}
 
 const DEFAULT_QUICK_ACCESS: QuickAccessId[] = []
 
@@ -418,6 +432,8 @@ function HomePage({ onNavigate }: { onNavigate: (page: string) => void }) {
   const [homeRouteDialogFullscreen, setHomeRouteDialogFullscreen] = useState(false)
   const [homeRouteMapSettingsOpen, setHomeRouteMapSettingsOpen] = useState(false)
   const [homeRouteTableSettingsTab, setHomeRouteTableSettingsTab] = useState<HomeTableSettingsTab>('column')
+  const [openHomeDeliveryTooltip, setOpenHomeDeliveryTooltip] = useState<string | null>(null)
+  const [openHomeKmTooltip, setOpenHomeKmTooltip] = useState<string | null>(null)
   const [homeRouteDraftColumns, setHomeRouteDraftColumns] = useState<{ key: HomeTableColumn; label: string; visible: boolean }[]>([
     { key: 'no', label: 'No', visible: true },
     { key: 'code', label: 'Code', visible: true },
@@ -845,18 +861,157 @@ function HomePage({ onNavigate }: { onNavigate: (page: string) => void }) {
                       </tr>
                     </thead>
                     <tbody className="text-[9px]">
+                      <tr className="bg-background hover:bg-muted/30 transition-colors duration-100 text-center">
+                        {homeRouteDraftColumns.filter(c => c.visible).map(col => {
+                          if (col.key === 'no') return <td key="no" className="h-9 px-3 text-center font-semibold text-primary">∞</td>
+                          if (col.key === 'code') return (
+                            <td key="code" className="h-9 px-3 text-center">
+                              <span className="text-[9px] font-semibold">QLK</span>
+                            </td>
+                          )
+                          if (col.key === 'name') return (
+                            <td key="name" className="h-9 px-3 text-center">
+                              <span className="text-[9px] font-semibold">QL Kitchen</span>
+                            </td>
+                          )
+                          if (col.key === 'delivery') return (
+                            <td key="delivery" className="h-9 px-3 text-center">
+                              <TooltipProvider delayDuration={100}>
+                                <Tooltip
+                                  open={openHomeDeliveryTooltip === 'home-start'}
+                                  onOpenChange={(open) => setOpenHomeDeliveryTooltip(open ? 'home-start' : null)}
+                                >
+                                  <TooltipTrigger asChild>
+                                    <button
+                                      type="button"
+                                      className="text-[9px] font-semibold cursor-help"
+                                      onClick={() => setOpenHomeDeliveryTooltip(prev => prev === 'home-start' ? null : 'home-start')}
+                                    >
+                                      Available
+                                    </button>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="max-w-[220px] text-center text-[11px] z-[9999]">
+                                    <div className="font-semibold">Available</div>
+                                    <div className="text-[11px] text-black dark:text-white">Starting point location</div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </td>
+                          )
+                          if (col.key === 'km') return (
+                            <td key="km" className="h-9 px-3 text-center">
+                              <TooltipProvider delayDuration={100}>
+                                <Tooltip
+                                  open={openHomeKmTooltip === 'home-start'}
+                                  onOpenChange={(open) => setOpenHomeKmTooltip(open ? 'home-start' : null)}
+                                >
+                                  <TooltipTrigger asChild>
+                                    <button
+                                      type="button"
+                                      className="text-[9px] font-semibold cursor-help tabular-nums"
+                                      onClick={() => setOpenHomeKmTooltip(prev => prev === 'home-start' ? null : 'home-start')}
+                                    >
+                                      0 Km
+                                    </button>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="max-w-[220px] text-center text-[11px] z-[9999]">
+                                    <div className="font-semibold">Starting point</div>
+                                    <div className="text-[11px] text-black dark:text-white">QL Kitchen base location</div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </td>
+                          )
+                          if (col.key === 'action') return (
+                            <td key="action" className="h-9 px-3 text-center">
+                              <div className="inline-flex items-center gap-1 justify-center">
+                                <button
+                                  type="button"
+                                  className="inline-flex items-center justify-center w-7 h-7 rounded-lg transition-all duration-150 hover:scale-110 active:scale-95 text-emerald-600 hover:bg-emerald-500/10"
+                                  onClick={() => {
+                                    setHomeRouteSelectedPoint({
+                                      code: 'QLK',
+                                      name: 'QL Kitchen',
+                                      delivery: 'Available',
+                                      latitude: homeRouteKmStartPoint.lat,
+                                      longitude: homeRouteKmStartPoint.lng,
+                                      descriptions: [],
+                                      markerColor: undefined,
+                                      qrCodeImageUrl: undefined,
+                                      qrCodeDestinationUrl: undefined,
+                                      avatarImageUrl: '/icon/QLK.jpeg',
+                                      avatarImages: ['/icon/QLK.jpeg'],
+                                    })
+                                    setHomeRoutePointModalOpen(true)
+                                  }}
+                                  title="Starting Point Info"
+                                >
+                                  <Info className="size-3.5" />
+                                </button>
+                              </div>
+                            </td>
+                          )
+                          return null
+                        })}
+                      </tr>
                       {homeRouteTableRows.map((point, index) => {
                         const isOff = !isDeliveryActive(point.delivery)
+                        const deliveryTooltip = getHomeDeliveryTooltip(point.delivery)
+                        const segmentLabel = homeRouteKmCalculateBy === 'step' && index > 0
+                          ? `${homeRouteTableRows[index - 1].name || homeRouteTableRows[index - 1].code} → ${point.name || point.code}: ${getHomeRouteKmValue(point, index)}`
+                          : `QL Kitchen → ${point.name || point.code}: ${getHomeRouteKmValue(point, index)}`
                         return (
                         <tr key={`${point.code}-${index}`} className={`odd:bg-muted/10 even:bg-background hover:bg-muted/25 transition-colors${isOff ? ' opacity-40' : ''}`}>
                           {homeRouteDraftColumns.filter(c => c.visible).map(col => {
                             if (col.key === 'no') return <td key="no" className="h-9 px-3 text-center font-semibold text-primary">{index + 1}</td>
                             if (col.key === 'code') return <td key="code" className="h-9 px-3 text-center font-semibold">{point.code}</td>
                             if (col.key === 'name') return <td key="name" className="h-9 px-3 text-center font-medium">{point.name}</td>
-                            if (col.key === 'delivery') return <td key="delivery" className="h-9 px-3 text-center font-medium">{homeDeliveryLabel(point.delivery)}</td>
+                            if (col.key === 'delivery') return (
+                              <td key="delivery" className="h-9 px-3 text-center font-medium">
+                                <TooltipProvider delayDuration={100}>
+                                  <Tooltip
+                                    open={openHomeDeliveryTooltip === point.code}
+                                    onOpenChange={(open) => setOpenHomeDeliveryTooltip(open ? point.code : null)}
+                                  >
+                                    <TooltipTrigger asChild>
+                                      <button
+                                        type="button"
+                                        className="text-[9px] font-semibold cursor-help"
+                                        aria-label={`${deliveryTooltip.label} delivery schedule`}
+                                        onClick={() => setOpenHomeDeliveryTooltip(prev => prev === point.code ? null : point.code)}
+                                      >
+                                        {homeDeliveryLabel(point.delivery)}
+                                      </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="top" className="max-w-[220px] text-center text-[11px] z-[9999]">
+                                      <div className="font-semibold">{deliveryTooltip.label}</div>
+                                      <div className="text-[11px] text-black dark:text-white">{deliveryTooltip.description}</div>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </td>
+                            )
                             if (col.key === 'km') return (
                               <td key="km" className="h-9 px-3 text-center font-medium">
-                                {getHomeRouteKmValue(point, index)}
+                                <TooltipProvider delayDuration={100}>
+                                  <Tooltip
+                                    open={openHomeKmTooltip === point.code}
+                                    onOpenChange={(open) => setOpenHomeKmTooltip(open ? point.code : null)}
+                                  >
+                                    <TooltipTrigger asChild>
+                                      <button
+                                        type="button"
+                                        className="text-[9px] font-semibold cursor-help tabular-nums"
+                                        onClick={() => setOpenHomeKmTooltip(prev => prev === point.code ? null : point.code)}
+                                      >
+                                        {getHomeRouteKmValue(point, index)}
+                                      </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="top" className="max-w-[220px] text-center text-[11px] z-[9999]">
+                                      {segmentLabel}
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
                               </td>
                             )
                             if (col.key === 'action') return (

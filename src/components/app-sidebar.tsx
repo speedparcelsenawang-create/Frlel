@@ -276,7 +276,7 @@ export function AppSidebar({
                         className="size-[14px] shrink-0"
                         style={{ color: "hsl(var(--accent-indigo))" }}
                       />
-                      <span className="text-[12px] font-medium text-foreground leading-tight">Home</span>
+                      <span className="text-sm font-medium text-foreground leading-tight">Home</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>
@@ -312,7 +312,7 @@ export function AppSidebar({
                         className="size-[14px] shrink-0"
                         style={{ color: "hsl(var(--accent-amber))" }}
                       />
-                      <span className="text-[12px] font-medium text-foreground leading-tight">Settings</span>
+                      <span className="text-sm font-medium text-foreground leading-tight">Settings</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>
@@ -352,7 +352,7 @@ export function AppSidebar({
               >
                 <div className="px-3 pt-2.5 pb-1.5 flex items-center gap-2">
                   <Zap className="size-3 text-amber-400 shrink-0" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Quick Actions</span>
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Quick Actions</span>
                 </div>
                 <div className="border-t border-border/40 mx-3 mb-1" />
 
@@ -408,7 +408,7 @@ export function AppSidebar({
               <button
                 type="button"
                 onClick={() => setActionOpen(v => !v)}
-                className={`w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-left text-[12px] font-medium transition-all duration-150 ${actionOpen ? 'bg-sidebar-accent/40 border border-sidebar-border/30' : 'border border-transparent'}`}
+                className={`w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm font-medium transition-all duration-150 ${actionOpen ? 'bg-sidebar-accent/40 border border-sidebar-border/30' : 'border border-transparent'}`}
               >
                 <Zap className={`size-[14px] shrink-0 transition-colors ${actionOpen ? 'text-amber-400' : 'text-amber-400/70'}`} />
                 <span className="flex-1 text-sidebar-foreground">Quick Actions</span>
