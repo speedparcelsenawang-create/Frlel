@@ -1637,7 +1637,7 @@ export function RouteList({ variant = 'route-list' }: RouteListProps) {
   )
   const pointDistances = useMemo(() => {
     return sortedDeliveryPoints.map((_, i) => {
-      const segment = roadDistances.segments[i] ?? 0
+      const segment = roadDistances.segments[i]
       const display = isStepMode
         ? (roadDistances.cumulative[i] ?? segment)
         : segment
@@ -3505,7 +3505,7 @@ export function RouteList({ variant = 'route-list' }: RouteListProps) {
                                             className="text-[9px] font-semibold cursor-help tabular-nums"
                                             onClick={() => setOpenKmTooltip(prev => prev === point.code ? null : point.code)}
                                           >
-                                            {hasCoords && distInfo ? formatKm(distInfo.display) : ''}
+                                            {hasCoords && distInfo.display != null ? formatKm(distInfo.display) : ''}
                                           </TooltipTrigger>
                                           <TooltipContent side="top" className="max-w-[220px] text-center text-[11px] z-[9999]">
                                             {segmentLabel}
