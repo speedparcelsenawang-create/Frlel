@@ -69,21 +69,19 @@ export function LoadingIntro({ onEnter }: { onEnter: () => void }) {
 
       {/* Main content */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 sm:px-8">
-        <div className="w-full max-w-md space-y-12">
+        <div className="w-full max-w-md space-y-16">
           {/* Logo/Brand */}
           <div
             className={`text-center transition-all duration-700 ${visible ? "scale-100 opacity-100" : "scale-90 opacity-0"}`}
             style={{ transitionDelay: visible ? "100ms" : "0ms" }}
           >
-            <div className="inline-flex items-center justify-center w-28 h-28 mb-6">
+            <div className="inline-flex items-center justify-center w-28 h-28 mb-4">
               <img src="/FamilyMart.png" alt="FamilyMart" className="w-20 h-20 object-contain" />
             </div>
-            <h1 className="text-[1.5rem] font-bold text-foreground">VENDING MECHINE</h1>
-            <p className="text-sm text-muted-foreground mt-2">Delivery Operations</p>
           </div>
 
           {/* Loading indicator */}
-          <div className="space-y-4">
+          <div className="space-y-5">
             {/* Animated dots */}
             <div
               className={`flex items-center justify-center gap-2 transition-all duration-700 ${visible ? "opacity-100" : "opacity-0"}`}
