@@ -3332,10 +3332,10 @@ export function RouteList({ variant = 'route-list' }: RouteListProps) {
                             const distInfo = pointDistances[index]
                             const hasCoords = point.latitude !== 0 || point.longitude !== 0
                             const segmentLabel = !isStepMode
-                            ? `QL Kitchen → ${point.name || point.code}: ${hasCoords && distInfo ? formatKm(distInfo.display) : '-'}`
+                            ? `QL Kitchen → ${point.name || point.code}: ${hasCoords && distInfo && distInfo.display !== null ? formatKm(distInfo.display) : '-'}`
                             : index === 0
-                              ? `QL Kitchen → ${point.name || point.code}: ${hasCoords && distInfo ? formatKm(distInfo.segment) : '-'}`
-                              : `${sortedDeliveryPoints[index - 1].name || sortedDeliveryPoints[index - 1].code} → ${point.name || point.code}: ${hasCoords && distInfo ? formatKm(distInfo.segment) : '-'}`
+                              ? `QL Kitchen → ${point.name || point.code}: ${hasCoords && distInfo && distInfo.segment !== null ? formatKm(distInfo.segment) : '-'}`
+                              : `${sortedDeliveryPoints[index - 1].name || sortedDeliveryPoints[index - 1].code} → ${point.name || point.code}: ${hasCoords && distInfo && distInfo.segment !== null ? formatKm(distInfo.segment) : '-'}`
 
                             const isEditingThisRow = editingCell?.rowCode === point.code
                             const hasRowPending = [...pendingCellEdits].some(k => k.startsWith(`${point.code}-`))
