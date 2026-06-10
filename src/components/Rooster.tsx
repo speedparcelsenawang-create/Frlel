@@ -1322,45 +1322,6 @@ export function Rooster({ viewMode: viewModeProp = "week" }: { viewMode?: ViewMo
         )}
       </div>
 
-      {!isEditMode && routeCycle.length > 0 && (
-        <div className="px-4 sm:px-5 lg:px-6 py-3 border-b border-border/70 bg-background/70">
-          <div className="rounded-2xl border border-border/70 bg-muted/40 p-3">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold text-foreground">Route Cycle</p>
-                <p className="text-[11px] text-muted-foreground">Read-only route cycle order visible in View mode.</p>
-              </div>
-              <span className="text-[11px] text-muted-foreground">View only</span>
-            </div>
-            <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {routeCycle.map((routeId, index) => {
-                const route = routes.find(r => r.id === routeId)
-                return (
-                  <div
-                    key={routeId}
-                    className="flex items-center gap-2 rounded-2xl border border-border bg-background px-3 py-2"
-                  >
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-[11px] font-semibold text-primary">
-                      {index + 1}
-                    </span>
-                    <div className="min-w-0 flex-1 text-[11px]">
-                      <p className="truncate font-medium text-foreground">{route?.name ?? routeId}</p>
-                      {route?.shift && (
-                        <p className="truncate text-[10px] text-muted-foreground">{route.shift.toUpperCase()}</p>
-                      )}
-                    </div>
-                    <span
-                      className="h-3 w-3 flex-shrink-0 rounded-full"
-                      style={{ backgroundColor: routeEffectiveColorMap.get(route?.id ?? routeId) ?? "#94A3B8" }}
-                    />
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* ── Grid ─────────────────────────────────────────────────────────────── */}
       <div className={`flex-1 min-h-0 overflow-auto transition-all duration-200 ease-out ${viewModeTransition === "out" ? "opacity-0 scale-[0.98]" : "opacity-100 scale-100"}`}>
         {resources.length === 0 ? (
