@@ -372,7 +372,7 @@ interface DeliveryItem {
 
 // ── Delivery type definitions ─────────────────────────────────────────────────
 const DELIVERY_ITEMS: DeliveryItem[] = [
-  { value: 'Daily',     label: 'Daily',     fullLabel: 'Daily',       description: 'Delivery every day',          bg: 'bg-emerald-100 dark:bg-emerald-900/40', text: 'text-emerald-700 dark:text-emerald-300', dot: '#10b981' },
+  { value: 'Daily',     label: 'Daily',     fullLabel: 'Daily',       description: 'Delivery everyday',          bg: 'bg-emerald-100 dark:bg-emerald-900/40', text: 'text-emerald-700 dark:text-emerald-300', dot: '#10b981' },
   { value: 'Alt 1',    label: 'Alt 1',     fullLabel: 'Alt 1',       description: 'Odd dates (1, 3, 5…)',         bg: 'bg-violet-100 dark:bg-violet-900/40',  text: 'text-violet-700 dark:text-violet-300',  dot: '#8b5cf6' },
   { value: 'Alt 2',    label: 'Alt 2',     fullLabel: 'Alt 2',       description: 'Even dates (2, 4, 6…)',        bg: 'bg-fuchsia-100 dark:bg-fuchsia-900/40',text: 'text-fuchsia-700 dark:text-fuchsia-300',dot: '#d946ef' },
   { value: 'Weekday',   label: 'WD',        fullLabel: 'Weekday',     description: 'Sun – Thu',                    bg: 'bg-sky-100 dark:bg-sky-900/40',        text: 'text-sky-700 dark:text-sky-300',        dot: '#0ea5e9' },
@@ -712,8 +712,8 @@ export function RouteList({ variant = 'route-list' }: RouteListProps) {
       const columns = viewportWidth >= 1280 ? 3 : viewportWidth >= 900 ? 2 : 1
       const targetWidth = (containerWidth - CAROUSEL_GAP * (columns - 1)) / columns
       const nextCardWidth = Math.min(420, Math.max(280, Math.min(targetWidth, viewportWidth - mobileInset)))
-      setCardW(nextCardWidth)
-      setCardH(Math.min(580, Math.max(400, window.innerHeight / 1.2 - (viewportWidth < 640 ? 180 : 220))))
+      setCardW(Math.max(279, nextCardWidth - 1))
+      setCardH(Math.max(399, Math.min(580, Math.max(400, window.innerHeight / 1.2 - (viewportWidth < 640 ? 180 : 220)))) - 1)
     })
     ro.observe(el)
     return () => ro.disconnect()
@@ -2321,20 +2321,20 @@ export function RouteList({ variant = 'route-list' }: RouteListProps) {
 
   // Responsive scale helpers derived from card dimensions
   const scale      = Math.min(1, cardW / 340)
-  const cardPad    = `${(1.4 * scale).toFixed(2)}rem`
-  const cardPadV   = `${(1.15 * scale).toFixed(2)}rem`
+  const cardPad    = `${(1.55 * scale).toFixed(2)}rem`
+  const cardPadV   = `${(1.25 * scale).toFixed(2)}rem`
   const cardFontLg = `${(1.01 * scale).toFixed(2)}rem`
   const cardFontSm = `${(0.78 * scale).toFixed(2)}rem`
   const cardFontXs = `${(0.77 * scale).toFixed(2)}rem`
-  const rowPadH    = `${(0.75 * scale).toFixed(2)}rem`
-  const rowPadV    = `${(0.55 * scale).toFixed(2)}rem`
-  const rowGap     = `${(0.75 * scale).toFixed(2)}rem`
+  const rowPadH    = `${(0.9 * scale).toFixed(2)}rem`
+  const rowPadV    = `${(0.68 * scale).toFixed(2)}rem`
+  const rowGap     = `${(1.0 * scale).toFixed(2)}rem`
   const iconSz     = Math.round(20 * scale)
-  const iconFs     = `${(0.75 * scale).toFixed(2)}rem`
-  const badgeFs    = `${(0.72 * scale).toFixed(2)}rem`
+  const iconFs     = `${(0.78 * scale).toFixed(2)}rem`
+  const badgeFs    = `${(0.78 * scale).toFixed(2)}rem`
   const btnFs      = `${(0.82 * scale).toFixed(2)}rem`
-  const btnPad     = `${(0.7  * scale).toFixed(2)}rem`
-  const bodyGap    = `${(0.6 * scale).toFixed(2)}rem`
+  const btnPad     = `${(0.72 * scale).toFixed(2)}rem`
+  const bodyGap    = `${(0.8 * scale).toFixed(2)}rem`
   const kmFs       = `${(0.62 * scale).toFixed(2)}rem`
   const editTitleFs = cardFontLg
   const editMetaFs = cardFontXs
@@ -2343,7 +2343,7 @@ export function RouteList({ variant = 'route-list' }: RouteListProps) {
   const editActionFs = btnFs
   const editChipFs = badgeFs
   const cardSectionBg = isDark ? 'hsl(var(--background)/0.84)' : 'hsl(var(--background)/0.96)'
-  const previewRows = cardH >= 520 ? 5 : cardH >= 460 ? 4 : 3
+  const previewRows = 3
   const hasActiveSearchOrFilter = !!searchQuery.trim() || combinedFilter !== 'all'
 
   return (
@@ -2604,6 +2604,8 @@ export function RouteList({ variant = 'route-list' }: RouteListProps) {
           const markerColor = route.color || routeColorPalette[stableRouteIndex % routeColorPalette.length]
           const cardPanel = getCardPanel(route.id)
           const isPinnedCard = pinnedIds.has(route.id)
+          const activeDeliveryCount = getRouteDeliveryPoints(route).filter(point => isDeliveryActive(point.delivery)).length
+          const totalDeliveryCount = getRouteDeliveryPoints(route).length
           const isCardHovered = hoveredRouteId === route.id
           const isPanelOpen = cardPanel.info || cardPanel.edit
           const isCardEmphasized = isPinnedCard || isPanelOpen
@@ -2674,7 +2676,7 @@ export function RouteList({ variant = 'route-list' }: RouteListProps) {
                         onClick={e => { e.stopPropagation(); togglePin(route) }}
                         title={isPinnedCard ? "Unpin from Home" : "Pin to Home"}
                         style={{
-                          background: isPinnedCard ? `${markerColor}18` : 'hsl(var(--muted)/0.5)',
+                          background: 'transparent',
                           border: 'none',
                           borderRadius: 8,
                           padding: '0.18rem 0.35rem',
@@ -2694,8 +2696,8 @@ export function RouteList({ variant = 'route-list' }: RouteListProps) {
                         </div>
                       </button>
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
-                        <span style={{ fontSize: `${(0.78 * Math.min(1, cardW / 340)).toFixed(2)}rem`, fontWeight: 900, color: isDark ? '#c0c7d0' : markerColor, lineHeight: 1 }}>{getRouteDeliveryPoints(route).length}</span>
-                        <span style={{ fontSize: `${(0.52 * Math.min(1, cardW / 340)).toFixed(2)}rem`, fontWeight: 700, color: isDark ? '#c0c7d0' : markerColor, opacity: isDark ? 0.85 : 0.6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>stops</span>
+                        <span style={{ fontSize: `${(0.78 * Math.min(1, cardW / 340)).toFixed(2)}rem`, fontWeight: 900, color: isDark ? '#c0c7d0' : markerColor, lineHeight: 1 }}>{activeDeliveryCount} / {totalDeliveryCount}</span>
+                        <span style={{ fontSize: `${(0.52 * Math.min(1, cardW / 340)).toFixed(2)}rem`, fontWeight: 700, color: isDark ? '#c0c7d0' : markerColor, opacity: isDark ? 0.85 : 0.6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>drops</span>
                       </div>
                     </div>
 
@@ -2830,7 +2832,7 @@ export function RouteList({ variant = 'route-list' }: RouteListProps) {
                   </div>{/* end Body */}
 
                   {/* Footer */}
-                  <div style={{ padding: `${rowGap} ${cardPad} ${cardPadV}`, display: 'flex', gap: '0.55rem', borderTop: `1.5px solid ${markerColor}60`, background: isDark ? 'rgba(148, 163, 184, 0.04)' : 'rgba(255, 255, 255, 0.38)' }}>
+                  <div style={{ padding: `${rowGap} ${cardPad} ${cardPadV}`, display: 'flex', gap: '0.55rem', background: isDark ? 'rgba(148, 163, 184, 0.04)' : 'rgba(255, 255, 255, 0.38)' }}>
                     {isEditMode && (
                       <button onClick={() => openExclusiveCardPanel(route.id, 'edit')} style={{ flex: 1, borderRadius: 11, fontSize: btnFs, fontWeight: 700, padding: `${btnPad} 0`, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', background: markerColor, color: '#fff', border: 'none', cursor: 'pointer', boxShadow: `0 3px 10px ${markerColor}44` }}>
                         <Edit2 style={{ width: iconSz * 0.6, height: iconSz * 0.6 }} /> Edit

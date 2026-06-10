@@ -112,7 +112,7 @@ const DELIVERY_ITEMS: DeliveryItem[] = [
   {
     value: "Daily",
     label: "Daily",
-    description: "Delivery every day",
+    description: "Delivery everyday",
     color: "bg-emerald-100 dark:bg-emerald-900/40",
     textColor: "text-emerald-700 dark:text-emerald-300",
   },

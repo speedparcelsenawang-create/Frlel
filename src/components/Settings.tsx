@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
 import { useTheme, FONT_OPTIONS, type AppFont } from "@/hooks/use-theme"
 import { useEditMode } from "@/contexts/EditModeContext"
 import { DEFAULT_ROUTE_COLORS } from "@/lib/route-colors"
@@ -504,17 +505,38 @@ export function Settings({ section = "profile" }: { section?: SectionId }) {
                   {routesList.map((entry, idx) => (
                     <div key={entry.id} className="group flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 shadow-sm hover:border-primary/30 transition-colors">
                       {/* Swatch */}
-                      <label className="relative cursor-pointer shrink-0" title={canEditRouteColors ? "Click to change colour" : "Enable Edit Mode to change colour"}>
-                        <div className="h-10 w-10 rounded-lg shadow-inner ring-2 ring-black/10 transition-transform group-hover:scale-105" style={{ background: entry.color }} />
-                        <input type="color" value={entry.color}
-                          disabled={!canEditRouteColors}
-                          onChange={e => {
-                            const c = e.target.value
-                            setRoutesList(prev => prev.map((r, i) => i === idx ? { ...r, color: c } : r))
-                            setRoutesListDirty(true)
-                          }}
-                          className="sr-only" />
-                      </label>
+                      <TooltipProvider delayDuration={100}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <label
+                              className="relative cursor-pointer shrink-0"
+                              title={canEditRouteColors ? "Click to change colour" : "Enable Edit Mode to change colour"}
+                              aria-label={`${entry.name} colour ${entry.color}`}
+                            >
+                              <div className="h-10 w-10 rounded-lg shadow-inner ring-2 ring-black/10 transition-transform group-hover:scale-105" style={{ background: entry.color }} />
+                              <input type="color" value={entry.color}
+                                disabled={!canEditRouteColors}
+                                onChange={e => {
+                                  const c = e.target.value
+                                  setRoutesList(prev => prev.map((r, i) => i === idx ? { ...r, color: c } : r))
+                                  setRoutesListDirty(true)
+                                }}
+                                className="sr-only" />
+                            </label>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[220px] text-[11px] text-center">
+                            <div className="font-semibold">{entry.name}</div>
+                            <div className="text-xs text-muted-foreground">{entry.code || entry.name}</div>
+                            <div className="mt-2 inline-flex items-center justify-center gap-2 rounded-full border border-border bg-background px-2 py-1 text-[11px] font-medium">
+                              <span className="h-2.5 w-2.5 rounded-full" style={{ background: entry.color }} />
+                              <span className="font-mono">{entry.color.toUpperCase()}</span>
+                            </div>
+                            <div className="mt-2 text-[10px] text-muted-foreground">
+                              {canEditRouteColors ? 'Click to adjust the route colour.' : 'Enable Edit Mode to change this colour.'}
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
 
                       {/* Code pill */}
                       <div className="shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-bold tracking-wide" style={{ background: entry.color, color: fgFor(entry.color) }}>
