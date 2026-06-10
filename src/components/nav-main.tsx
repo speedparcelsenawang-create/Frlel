@@ -97,7 +97,7 @@ export function NavMain({
                     className="size-[14px] shrink-0 transition-colors"
                     style={{ color: sectionColor }}
                   />
-                  <span className="text-[12px] font-medium text-foreground leading-tight">{item.title}</span>
+                  <span className="text-[11px] font-medium text-foreground leading-tight">{item.title}</span>
                 </SidebarMenuButton>
 
                 {hasChildren ? (

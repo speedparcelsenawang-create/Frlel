@@ -2331,7 +2331,7 @@ export function RouteList({ variant = 'route-list' }: RouteListProps) {
   const rowGap     = `${(1.0 * scale).toFixed(2)}rem`
   const iconSz     = Math.round(20 * scale)
   const iconFs     = `${(0.78 * scale).toFixed(2)}rem`
-  const badgeFs    = `${(0.78 * scale).toFixed(2)}rem`
+  const badgeFs    = `${(0.72 * scale).toFixed(2)}rem`
   const btnFs      = `${(0.82 * scale).toFixed(2)}rem`
   const btnPad     = `${(0.72 * scale).toFixed(2)}rem`
   const bodyGap    = `${(0.8 * scale).toFixed(2)}rem`
@@ -2696,7 +2696,7 @@ export function RouteList({ variant = 'route-list' }: RouteListProps) {
                         </div>
                       </button>
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
-                        <span style={{ fontSize: `${(0.78 * Math.min(1, cardW / 340)).toFixed(2)}rem`, fontWeight: 900, color: isDark ? '#c0c7d0' : markerColor, lineHeight: 1 }}>{activeDeliveryCount} / {totalDeliveryCount}</span>
+                        <span style={{ fontSize: `${(0.65 * Math.min(1, cardW / 340)).toFixed(2)}rem`, fontWeight: 900, color: totalDeliveryCount > 15 ? '#ef4444' : (isDark ? '#c0c7d0' : markerColor), lineHeight: 1 }}>{activeDeliveryCount} / {totalDeliveryCount}</span>
                         <span style={{ fontSize: `${(0.52 * Math.min(1, cardW / 340)).toFixed(2)}rem`, fontWeight: 700, color: isDark ? '#c0c7d0' : markerColor, opacity: isDark ? 0.85 : 0.6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>drops</span>
                       </div>
                     </div>
@@ -2749,8 +2749,8 @@ export function RouteList({ variant = 'route-list' }: RouteListProps) {
                             return (
                               <Popover key={type} open={isOpen} onOpenChange={open => setBadgePopover(open ? popKey : null)}>
                                 <PopoverTrigger asChild>
-                                  <span onClick={() => setBadgePopover(isOpen ? null : popKey)} style={{ display: 'inline-flex', alignItems: 'center', fontSize: badgeFs, fontWeight: 700, color: markerColor, background: isDark ? 'hsl(var(--card)/0.45)' : 'hsl(var(--background)/0.95)', padding: '4px 11px', borderRadius: '6px', border: `1px solid ${markerColor}33`, boxShadow: isDark ? `0 1px 2px ${markerColor}15 inset` : 'none', flexShrink: 0, letterSpacing: '0.03em', cursor: 'pointer', opacity: isOpen ? 0.8 : 1, transition: 'opacity 0.15s, transform 0.15s' }}>
-                                    {getDeliveryLabel(type)}&nbsp;<span style={{ opacity: 0.5, fontWeight: 500, color: 'inherit' }}>&bull;</span>&nbsp;<span style={{ color: markerColor, fontWeight: 700 }}>{pts.length}</span>
+                                  <span onClick={() => setBadgePopover(isOpen ? null : popKey)} style={{ display: 'inline-flex', alignItems: 'center', fontSize: badgeFs, fontWeight: 700, color: isDark ? '#b0b9c3' : '#64748b', background: isDark ? 'hsl(var(--card)/0.55)' : 'hsl(var(--muted)/0.4)', padding: '4px 11px', borderRadius: '6px', border: `1px solid ${isDark ? '#64748b33' : '#cbd5e133'}`, boxShadow: isDark ? `0 1px 2px rgba(0,0,0,0.1) inset` : 'none', flexShrink: 0, letterSpacing: '0.03em', cursor: 'pointer', opacity: isOpen ? 0.8 : 1, transition: 'opacity 0.15s, transform 0.15s' }}>
+                                    {getDeliveryLabel(type)}&nbsp;<span style={{ opacity: 0.5, fontWeight: 500, color: 'inherit' }}>&bull;</span>&nbsp;<span style={{ color: 'inherit', fontWeight: 700 }}>{pts.length}</span>
                                   </span>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-64 p-0 z-50 backdrop-blur-xl bg-background/90 dark:bg-card/90 shadow-2xl rounded-xl overflow-hidden" style={{ border: `1px solid ${cardBorderColor}` }} align="center" side="top">
@@ -2814,10 +2814,10 @@ export function RouteList({ variant = 'route-list' }: RouteListProps) {
                             style={{
                               display: 'inline-flex', alignItems: 'center',
                               fontSize: badgeFs, fontWeight: 700,
-                              color: markerColor,
-                              background: isDark ? 'hsl(var(--card)/0.35)' : 'hsl(var(--background)/0.9)',
+                              color: isDark ? '#b0b9c3' : '#64748b',
+                              background: isDark ? 'hsl(var(--card)/0.55)' : 'hsl(var(--muted)/0.4)',
                               padding: '4px 11px', borderRadius: '5px',
-                              border: `1px solid ${markerColor}33`,
+                              border: `1px solid ${isDark ? '#64748b33' : '#cbd5e133'}`,
                               boxShadow: 'none',
                               letterSpacing: '0.03em',
                             }}
