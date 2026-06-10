@@ -301,37 +301,6 @@ function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): nu
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-function greedyNearestNeighbor(coords: Array<[number, number]>): number[] {
-  if (coords.length === 0) return [];
-  if (coords.length === 1) return [0];
-
-  const remaining = new Set(coords.map((_, i) => i));
-  const sequence: number[] = [0];
-  remaining.delete(0);
-
-  let currentIdx = 0;
-  while (remaining.size > 0) {
-    const [currentLon, currentLat] = coords[currentIdx];
-    let nearest = -1;
-    let nearestDist = Number.POSITIVE_INFINITY;
-
-    for (const idx of remaining) {
-      const [lon, lat] = coords[idx];
-      const dist = haversineKm(currentLat, currentLon, lat, lon);
-      if (dist < nearestDist) {
-        nearestDist = dist;
-        nearest = idx;
-      }
-    }
-
-    sequence.push(nearest);
-    remaining.delete(nearest);
-    currentIdx = nearest;
-  }
-
-  return sequence;
-}
-
 async function handleRoadDistance(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, error: `Method ${req.method} not allowed` });
@@ -340,30 +309,26 @@ async function handleRoadDistance(req: VercelRequest, res: VercelResponse) {
   const { coordinates, source, destinations } = req.body;
 
   try {
-    // Handle route sequence request
     if (Array.isArray(coordinates) && coordinates.length > 0) {
-      const sequence = greedyNearestNeighbor(coordinates);
-      let totalKm = 0;
-      let totalMin = 0;
-
-      for (let i = 0; i < sequence.length - 1; i++) {
-        const [lon1, lat1] = coordinates[sequence[i]];
-        const [lon2, lat2] = coordinates[sequence[i + 1]];
+      const segments: number[] = [];
+      for (let i = 0; i < coordinates.length - 1; i++) {
+        const [lon1, lat1] = coordinates[i] as [number, number];
+        const [lon2, lat2] = coordinates[i + 1] as [number, number];
         const km = haversineKm(lat1, lon1, lat2, lon2);
-        totalKm += km;
-        // Estimate 1 minute per 1 km for travel time
-        totalMin += km;
+        segments.push(Math.round(km * 100) / 100);
       }
+
+      const totalKm = Math.round(segments.reduce((sum, value) => sum + value, 0) * 100) / 100;
+      const totalMin = Math.round(totalKm);
 
       return res.status(200).json({
         mode: 'sequence',
-        segments: sequence,
-        totalKm: Math.round(totalKm * 100) / 100,
-        totalMin: Math.round(totalMin),
+        segments,
+        totalKm,
+        totalMin,
       });
     }
 
-    // Handle distance matrix request
     if (Array.isArray(source) && Array.isArray(destinations)) {
       const [sourceLon, sourceLat] = source;
       const distances: (number | null)[] = [];
